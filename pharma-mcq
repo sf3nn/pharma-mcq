@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Website</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      margin: 0;
+      padding: 0;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 30px;
+      margin: 50px auto;
+      width: 600px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease-in-out;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    .option-btn {
+      display: block;
+      margin: 10px auto;
+      padding: 12px;
+      width: 90%;
+      border: none;
+      border-radius: 8px;
+      background: #3498db;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .option-btn:hover {
+      background: #1abc9c;
+      transform: scale(1.05);
+    }
+    .nav-btn {
+      margin: 10px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #e67e22;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .nav-btn:hover {
+      background: #d35400;
+      transform: scale(1.05);
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+    #timer {
+      font-size: 18px;
+      color: #c0392b;
+      margin-bottom: 15px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Question will appear here</h2>
+    <div id="timer">Time: 30 seconds</div>
+    <div id="options"></div>
+    <button class="nav-btn" onclick="prevQuestion()">Previous Question</button>
+    <button class="nav-btn" onclick="nextQuestion()">Next Question</button>
+    <button class="nav-btn" id="translate-btn" onclick="toggleLanguage()">Translate to Arabic</button>
+    <p id="result"></p>
+    <div class="footer">© sf3nn جميع الحقوق محفوظة - سُفيان </div>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    question_en: "What is the main action of benzodiazepines on GABA_A receptors?",
+    question_ar: "ما هو الفعل الرئيسي للبنزوديازيبينات على مستقبلات GABA_A؟",
+    options_en: ["A. Inhibit GABA binding", "B. Enhance response to GABA", "C. Block chloride channels", "D. Reduce receptor affinity for GABA"],
+    options_ar: ["A. تثبيط ارتباط GABA", "B. تعزيز الاستجابة لـ GABA", "C. حجب قنوات الكلور", "D. تقليل ألفة المستقبل لـ GABA"],
+    answer: "B. Enhance response to GABA"
+  },
+  {
+    question_en: "Opening of chloride channels after benzodiazepine action causes:",
+    question_ar: "فتح قنوات الكلور بعد تأثير البنزوديازيبينات يسبب:",
+    options_en: ["A. Depolarization", "B. Hyperpolarization", "C. Increased excitability", "D. Sodium influx"],
+    options_ar: ["A. إزالة الاستقطاب", "B. فرط الاستقطاب", "C. زيادة الاستثارية", "D. دخول الصوديوم"],
+    answer: "B. Hyperpolarization"
+  },
+  {
+    question_en: "Benzodiazepines bind to a site that is:",
+    question_ar: "ترتبط البنزوديازيبينات بموقع يكون:",
+    options_en: ["A. Same as GABA site", "B. Different from GABA site", "C. Inside chloride channel", "D. On sodium channel"],
+    options_ar: ["A. نفس موقع GABA", "B. مختلف عن موقع GABA", "C. داخل قناة الكلور", "D. على قناة الصوديوم"],
+    answer: "B. Different from GABA site"
+  },
+  {
+    question_en: "Barbiturates enhance GABA action by:",
+    question_ar: "تعزز الباربيتورات فعل GABA من خلال:",
+    options_en: ["A. Increasing channel opening duration", "B. Blocking GABA receptors", "C. Reducing chloride entry", "D. Acting only on cortex"],
+    options_ar: ["A. زيادة مدة فتح القناة", "B. حجب مستقبلات GABA", "C. تقليل دخول الكلور", "D. العمل فقط على القشرة"],
+    answer: "A. Increasing channel opening duration"
+  },
+  {
+    question_en: "At high concentrations, barbiturates can:",
+    question_ar: "عند التراكيز العالية، يمكن للباربيتورات أن:",
+    options_en: ["A. Block COX enzyme", "B. Mimic GABA effect", "C. Increase prostaglandins", "D. Reduce CNS depression"],
+    options_ar: ["A. تثبط إنزيم COX", "B. تحاكي تأثير GABA", "C. تزيد البروستاغلاندين", "D. تقلل تثبيط الجهاز العصبي"],
+    answer: "B. Mimic GABA effect"
+  },
+  {
+    question_en: "Opioid analgesics are defined as drugs that:",
+    question_ar: "تُعرَّف المسكنات الأفيونية بأنها أدوية:",
+    options_en: ["A. Reduce inflammation only", "B. Have morphine-like action", "C. Block COX-2 only", "D. Used only for cough"],
+    options_ar: ["A. تقلل الالتهاب فقط", "B. لها فعل مشابه للمورفين", "C. تحجب COX-2 فقط", "D. تُستخدم فقط للسعال"],
+    answer: "B. Have morphine-like action"
+  },
+  {
+    question_en: "Morphine relieves pain by:",
+    question_ar: "يخفف المورفين الألم عن طريق:",
+    options_en: ["A. Blocking prostaglandins", "B. Binding opioid receptors", "C. Enhancing GABA", "D. Opening sodium channels"],
+    options_ar: ["A. حجب البروستاغلاندين", "B. الارتباط بمستقبلات الأفيون", "C. تعزيز GABA", "D. فتح قنوات الصوديوم"],
+    answer: "B. Binding opioid receptors"
+  },
+  {
+    question_en: "Codeine is most commonly administered in which form?",
+    question_ar: "ما الشكل الأكثر شيوعًا لإعطاء الكودايين؟",
+    options_en: ["A. Intravenous", "B. Tablets or syrup", "C. Topical cream", "D. Inhalation"],
+    options_ar: ["A. وريدياً", "B. أقراص أو شراب", "C. كريم موضعي", "D. استنشاق"],
+    answer: "B. Tablets or syrup"
+  },
+  {
+    question_en: "NSAIDs act mainly by inhibiting:",
+    question_ar: "تعمل مضادات الالتهاب غير الستيرويدية أساسًا عبر تثبيط:",
+    options_en: ["A. GABA receptors", "B. Prostaglandin synthesis", "C. Opioid receptors", "D. Sodium channels"],
+    options_ar: ["A. مستقبلات GABA", "B. تصنيع البروستاغلاندين", "C. مستقبلات الأفيون", "D. قنوات الصوديوم"],
+    answer: "B. Prostaglandin synthesis"
+  },
+  {
+    question_en: "COX-1 is described as:",
+    question_ar: "يُوصف COX-1 بأنه:",
+    options_en: ["A. Induced during inflammation", "B. Constitutive in the cells", "C. Only in the CNS", "D. Activated by opioids"],
+    options_ar: ["A. يُحفَّز أثناء الالتهاب", "B. موجود باستمرار في الخلايا", "C. موجود فقط في الجهاز العصبي", "D. يُنشَّط بواسطة الأفيونات"],
+    answer: "B. Constitutive in the cells"
+  },
+  {
+    question_en: "A major adverse effect of aspirin is:",
+    question_ar: "من التأثيرات الجانبية الكبرى للأسبرين:",
+    options_en: ["A. Hyperglycemia", "B. Gastrointestinal disturbances", "C. CNS depression", "D. Hypertension"],
+    options_ar: ["A. ارتفاع السكر", "B. اضطرابات هضمية", "C. تثبيط الجهاز العصبي", "D. ارتفاع الضغط"],
+    answer: "B. Gastrointestinal disturbances"
+  },
+  {
+    question_en: "Ibuprofen and naproxen are commonly used for:",
+    question_ar: "يُستخدم الإيبوبروفين والنابروكسين عادة لعلاج:",
+    options_en: ["A. Diabetes", "B. Rheumatoid arthritis", "C. Asthma", "D. Epilepsy"],
+    options_ar: ["A. السكري", "B. التهاب المفاصل الروماتويدي", "C. الربو", "D. الصرع"],
+    answer: "B. Rheumatoid arthritis"
+  },
+  {
+    question_en: "NSAIDs are used to reduce fever, especially:",
+    question_ar: "تُستخدم مضادات الالتهاب غير الستيرويدية لخفض الحمى، خصوصًا:",
+    options_en: ["A. Aspirin because it's safest", "B. Paracetamol because it's safer", "C. Morphine because it lowers fever", "D. Codeine because it is antipyretic"],
+    options_ar: ["A. الأسبرين لأنه الأكثر أمانًا", "B. الباراسيتامول لأنه أكثر أماناً", "C. المورفين لأنه يخفض الحمى", "D. الكودايين لأنه خافض للحرارة"],
+    answer: "B. Paracetamol because it's safer"
+  },
+  {
+    question_en: "The three main clinical uses of NSAIDs include pain relief, anti-inflammatory action, and:",
+    question_ar: "الاستخدامات السريرية الثلاثة الرئيسية لـ NSAIDs تشمل تسكين الألم، مضاد الالتهاب، و:",
+    options_en: ["A. Muscle relaxation", "B. Lowering fever", "C. Increasing appetite", "D. Sedation"],
+    options_ar: ["A. إرخاء العضلات", "B. خفض الحمى", "C. زيادة الشهية", "D. التهدئة"],
+    answer: "B. Lowering fever"
+  },
+  {
+    question_en: "Benzodiazepines reduce neuronal excitability by:",
+    question_ar: "تقلل البنزوديازيبينات من استثارية الخلايا العصبية عبر:",
+    options_en: ["A. Sodium channel opening", "B. Chloride entry causing hyperpolarization", "C. Increasing potassium efflux", "D. Blocking GABA receptors"],
+    options_ar: ["A. فتح قنوات الصوديوم", "B. دخول الكلور مسببًا فرط الاستقطاب", "C. زيادة خروج البوتاسيوم", "D. حجب مستقبلات GABA"],
+    answer: "B. Chloride entry causing hyperpolarization"
+  },
+  {
+    question_en: "What is one of the causative factors of peptic ulcer disease?",
+    question_ar: "ما أحد العوامل المسببة للقرحة الهضمية؟",
+    options_en: ["A. Increased hydrochloride acid secretion", "B. Viral infection", "C. Decreased gastric acid secretion", "D. High bicarbonate level"],
+    options_ar: ["A. زيادة إفراز حمض الهيدروكلوريك", "B. عدوى فيروسية", "C. انخفاض إفراز الحمض المعدي", "D. ارتفاع مستوى البيكاربونات"],
+    answer: "A. Increased hydrochloride acid secretion"
+  },
+  {
+    question_en: "H2-receptor antagonists act mainly by:",
+    question_ar: "تعمل مضادات مستقبلات H2 بشكل رئيسي من خلال:",
+    options_en: ["A. Increasing gastric acid secretion", "B. Competitive antagonism of histamine at H2 receptors", "C. Stimulating parietal cells", "D. Blocking proton pumps"],
+    options_ar: ["A. زيادة إفراز الحمض المعدي", "B. التضاد التنافسي مع الهيستامين عند مستقبلات H2", "C. تحفيز الخلايا الجدارية", "D. حصر مضخات البروتون"],
+    answer: "B. Competitive antagonism of histamine at H2 receptors"
+  },
+  {
+    question_en: "Which of the following is an H2-receptor antagonist?",
+    question_ar: "أي مما يلي يُعد من مضادات مستقبلات H2؟",
+    options_en: ["A. Cimetidine", "B. Omeprazole", "C. Metoclopramide", "D. Prochlorperazine"],
+    options_ar: ["A. سيميتيدين", "B. أوميبرازول", "C. ميتوكلوبراميد", "D. بروكلوربيرازين"],
+    answer: "A. Cimetidine"
+  },
+  {
+    question_en: "Cimetidine has limited use because it:",
+    question_ar: "يُحدَّد استخدام السيميتيدين لأنه:",
+    options_en: ["A. Does not inhibit gastric acid", "B. Inhibits cytochrome P450 causing drug interactions", "C. Causes hyperglycemia", "D. Has no effect on ulcers"],
+    options_ar: ["A. لا يثبط الحمض المعدي", "B. يثبط السيتوكروم P450 مسببًا تداخلات دوائية", "C. يسبب فرط سكر الدم", "D. لا يؤثر على القرحة"],
+    answer: "B. Inhibits cytochrome P450 causing drug interactions"
+  },
+  {
+    question_en: "Patients with NSAID-induced ulcers are best treated with:",
+    question_ar: "أفضل علاج لقرحة ناتجة عن الـ NSAIDs هو:",
+    options_en: ["A. H2 antagonists", "B. PPIs", "C. Antacids", "D. Sucralfate"],
+    options_ar: ["A. مضادات H2", "B. مثبطات مضخة البروتون", "C. مضادات الحموضة", "D. السوكرالفات"],
+    answer: "B. PPIs"
+  },
+  {
+    question_en: "Prochlorperazine works mainly by blocking:",
+    question_ar: "يعمل بروكلوربيرازين بشكل رئيسي عبر حصر:",
+    options_en: ["A. H2 receptors", "B. Dopamine D₂ receptors", "C. GABA receptors", "D. Serotonin receptors"],
+    options_ar: ["A. مستقبلات H2", "B. مستقبلات الدوبامين D2", "C. مستقبلات GABA", "D. مستقبلات السيروتونين"],
+    answer: "B. Dopamine D₂ receptors"
+  },
+  {
+    question_en: "One of the uses of Prochlorperazine is:",
+    question_ar: "إحدى استخدامات بروكلوربيرازين هي:",
+    options_en: ["A. Treatment of ulcers", "B. Severe nausea from migraines", "C. Lowering blood sugar", "D. Treating diarrhea"],
+    options_ar: ["A. علاج القرحة", "B. الغثيان الشديد الناتج من الشقيقة", "C. خفض سكر الدم", "D. علاج الإسهال"],
+    answer: "B. Severe nausea from migraines"
+  },
+  {
+    question_en: "Diabetes mellitus is characterized by:",
+    question_ar: "يُعرَّف داء السكري بأنه:",
+    options_en: ["A. Low blood glucose", "B. Elevated blood glucose", "C. High insulin secretion", "D. Absence of insulin resistance"],
+    options_ar: ["A. انخفاض سكر الدم", "B. ارتفاع سكر الدم", "C. زيادة إفراز الإنسولين", "D. غياب مقاومة الإنسولين"],
+    answer: "B. Elevated blood glucose"
+  },
+  {
+    question_en: "Type 1 diabetes is caused by:",
+    question_ar: "يحدث السكري من النوع الأول بسبب:",
+    options_en: ["A. Insulin resistance", "B. Autoimmune destruction of β-cells", "C. Excessive insulin production", "D. Viral attack on liver cells"],
+    options_ar: ["A. مقاومة الإنسولين", "B. تدمير مناعي ذاتي لخلايا بيتا", "C. إنتاج مفرط للإنسولين", "D. هجوم فيروسي على خلايا الكبد"],
+    answer: "B. Autoimmune destruction of β-cells"
+  },
+  {
+    question_en: "The primary treatment for type 1 diabetes is:",
+    question_ar: "العلاج الأساسي للسكري من النوع الأول هو:",
+    options_en: ["A. Oral hypoglycemic agents", "B. Lifestyle changes only", "C. Lifelong exogenous insulin", "D. No treatment needed"],
+    options_ar: ["A. أدوية خافضة للسكر فموية", "B. تغييرات نمط الحياة فقط", "C. إنسولين خارجي مدى الحياة", "D. لا يحتاج علاج"],
+    answer: "C. Lifelong exogenous insulin"
+  }
+];
+
+
+    let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 30;
+    let currentLanguage = "en";
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById("question").innerText = currentLanguage === "en" ? q.question_en : q.question_ar;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      const options = currentLanguage === "en" ? q.options_en : q.options_ar;
+      options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.className = "option-btn";
+        btn.onclick = () => checkAnswer(option);
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById("result").innerText = "";
+      resetTimer();
+    }
+
+    function checkAnswer(answer) {
+      if(answer.includes(questions[currentQuestion].answer)) {
+        score++;
+        document.getElementById("result").innerText = currentLanguage === "en" ? "Correct Answer" : "إجابة صحيحة";
+        document.getElementById("result").style.color = "green";
+      } else {
+        document.getElementById("result").innerText = currentLanguage === "en" ? "Wrong Answer" : "إجابة خاطئة";
+        document.getElementById("result").style.color = "red";
+      }
+      clearInterval(timer);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if(currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        document.getElementById("question").innerText = currentLanguage === "en" ? "كفو بالتوفيق يارب !" : "انتهى الاختبار";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("result").innerText = (currentLanguage === "en" ? "Your score: " : "نتيجتك: ") + score + " / " + questions.length;
+        document.getElementById("timer").innerText = "";
+      }
+    }
+
+    function prevQuestion() {
+      if(currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    }
+
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === "en" ? "ar" : "en";
+      document.getElementById("translate-btn").innerText = currentLanguage === "en" ? "Translate to Arabic" : "ترجمة إلى الإنجليزية";
+      loadQuestion();
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      timeLeft = 30;
+      document.getElementById("timer").innerText = currentLanguage === "en" ? "Time: " + timeLeft + " seconds" : "الوقت: " + timeLeft + " ثانية";
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = currentLanguage === "en" ? "Time: " + timeLeft + " seconds" : "الوقت: " + timeLeft + " ثانية";
+        if(timeLeft <= 0) {
+          clearInterval(timer);
+          document.getElementById("result").innerText = currentLanguage === "en" ? "Time's up!" : "انتهى الوقت!";
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
